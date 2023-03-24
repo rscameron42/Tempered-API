@@ -14,6 +14,7 @@ conductor = lines[0]
 api_client_id = lines[1]
 api_token = lines[2]
 
+url_conductor = "https://" + conductor + "/api/v1/settings/network"
 url_fw_updates = "https://" + conductor + "/api/v1/firmware_updates"
 
 headers = {
@@ -23,9 +24,12 @@ headers = {
     "X-API-Token": api_token
 }
 # Get Conductor version
-query_params = {"paginate": "false", "sort": "version"}
-response = requests.get(url_fw_updates, params=query_params, headers=headers, verify=False)
+query_params = {"paginate": "false"}
+response = requests.get(url_conductor, params=query_params, headers=headers, verify=False)
 data = response.json()
+conductor_version = data.get('version')
+print(conductor_version)
+#print(data)
 # Get Available Firmware IDs
 query_params = {"paginate": "false", "sort": "version"}
 response = requests.get(url_fw_updates, params=query_params, headers=headers, verify=False)
@@ -41,17 +45,17 @@ for item in data:
         aw500_intermetiate = id
     if (version == "2.2.12" and model == "Airwall-mvebu64"):
         aw75_intermetiate = id
-    if (version == "3.1.2" and model == "Airwall-mvebu"):
+    if (version == conductor_version and model == "Airwall-mvebu"):
         aw250_latest = id
-    if (version == "3.1.2" and model == "Airwall-x86_64"):
+    if (version == conductor_version and model == "Airwall-x86_64"):
         aw500_latest = id
-    if (version == "3.1.2" and model == "Airwall-mvebu64"):
+    if (version == conductor_version and model == "Airwall-mvebu64"):
         aw75_latest = id
     #print(version)
 
 print("Firmware package updates 110, 150, 250, AV3200 series and certain 32-bit ARM 300v Airwalls:")
-print("\tversion 2.2.12 = ", aw250_intermetiate, "\n\tversion 3.1.2 =  ", aw250_latest, "\n")
+print("\tversion 2.2.12 = ", aw250_intermetiate, "\n\tversion ", conductor_version, " =  ", aw250_latest, "\n")
 print("Firmware package updates the 100rc, 300v, 310rc, 400, 500, and AV3033 series Airwalls:")
-print("\tversion 2.2.12 = ", aw500_intermetiate, "\n\tversion 3.1.2 =  ", aw500_latest, "\n")
+print("\tversion 2.2.12 = ", aw500_intermetiate, "\n\tversion", conductor_version, " =  ", aw500_latest, "\n")
 print("Firmware package updates 75 series and certain 64-bit ARM 300v Airwalls:")
-print("\tversion 2.2.12 = ", aw75_intermetiate, "\n\tversion 3.1.2 =  ", aw75_latest, "\n")
+print("\tversion 2.2.12 = ", aw75_intermetiate, "\n\tversion", conductor_version, " =  ", aw75_latest, "\n")
